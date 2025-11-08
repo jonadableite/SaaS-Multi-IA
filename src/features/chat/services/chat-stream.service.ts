@@ -168,7 +168,7 @@ export class ChatStreamService {
       const model =
         data.model ||
         this.aiRouter.getAvailableModels(
-          provider as "openai" | "anthropic" | "google",
+          provider as "openai" | "anthropic" | "google" | "fusion",
         )[0];
 
       // Ensure user has initial credits (if they have 0 credits)
@@ -209,7 +209,7 @@ export class ChatStreamService {
       let aiResponse;
       try {
         aiResponse = await this.aiRouter.chat(
-          provider as "openai" | "anthropic" | "google",
+          provider as "openai" | "anthropic" | "google" | "fusion",
           {
             model,
             messages: conversationHistory,

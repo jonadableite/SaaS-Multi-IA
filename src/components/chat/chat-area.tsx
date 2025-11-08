@@ -14,11 +14,15 @@ interface ChatAreaProps {
   selectedModel: string
   isMobile: boolean
   onModelChange?: (model: string) => void
+  onConversationCreated?: (conversationId: string) => void
 }
 
 // Helper function to extract provider from model ID
 function getProviderFromModel(modelId: string): string {
   const modelLower = modelId.toLowerCase()
+  if (modelLower.includes('whatlead-fusion') || modelLower.includes('fusion')) {
+    return 'fusion'
+  }
   if (modelLower.includes('gpt') || modelLower.includes('o1')) {
     return 'openai'
   }
@@ -45,6 +49,7 @@ export function ChatArea({
   selectedModel,
   isMobile,
   onModelChange,
+  onConversationCreated,
 }: ChatAreaProps) {
   const [messages, setMessages] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -62,6 +67,8 @@ export function ChatArea({
     } else {
       setMessages([])
       setConversationTitle(null)
+      setActiveAgentId(null)
+      setActiveAgentName(null)
     }
   }, [conversationId])
 
@@ -180,6 +187,12 @@ export function ChatArea({
           )
           setIsLoading(false)
           disconnectStream()
+          
+          // Update conversationId if a new conversation was created
+          const newConversationId = message.data?.conversationId
+          if (newConversationId && !conversationId) {
+            onConversationCreated?.(newConversationId)
+          }
         } else if (message.type === 'error') {
           setMessages((prev) =>
             prev.map((msg) =>
@@ -390,7 +403,7 @@ export function ChatArea({
         isLoading={isLoading}
         onStop={handleStopGenerating}
         isMobile={isMobile}
-        disabled={!conversationId && messages.length === 0}
+        disabled={isLoading}
         selectedModel={selectedModel}
         onModelChange={(modelId) => {
           onModelChange?.(modelId)

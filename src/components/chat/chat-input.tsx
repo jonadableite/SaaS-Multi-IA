@@ -248,11 +248,7 @@ export function ChatInput({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={
-                  disabled
-                    ? 'Crie uma nova conversa para começar...'
-                    : 'Mensagem para o Inner AI'
-                }
+                placeholder="Digite sua mensagem ou use um template para começar..."
                 disabled={disabled || isLoading || isRecording}
                 className={cn(
                   'min-h-[44px] max-h-[200px] resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2',

@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ChatArea } from './chat-area'
-import { ModelSelector } from './model-selector'
+import { ChatConversationsSidebar } from './chat-conversations-sidebar'
 import { MemoryPanel } from './memory-panel'
 import { Menu, X, Brain, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { cn } from '@/utils/cn'
 
 export function ChatLayout() {
   const router = useRouter()
@@ -25,6 +26,8 @@ export function ChatLayout() {
   useEffect(() => {
     if (isMobile) {
       setSidebarOpen(false)
+    } else {
+      setSidebarOpen(true)
     }
   }, [isMobile])
 
@@ -42,8 +45,40 @@ export function ChatLayout() {
     }
   }
 
+  const handleConversationCreated = (conversationId: string) => {
+    setCurrentConversation(conversationId)
+    router.push(`/app?conversationId=${conversationId}`)
+  }
+
   return (
     <div className="flex h-full w-full bg-background overflow-hidden">
+      {/* Conversations Sidebar */}
+      {sidebarOpen && (
+        <>
+          {/* Backdrop for mobile */}
+          {isMobile && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
+          <div
+            className={cn(
+              'flex h-full flex-col border-r bg-muted/30',
+              isMobile
+                ? 'fixed left-0 top-0 bottom-0 z-50 w-80 transform transition-transform duration-300 ease-in-out'
+                : 'w-80',
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+            )}
+          >
+            <ChatConversationsSidebar
+              onConversationSelect={handleSelectConversation}
+            />
+          </div>
+        </>
+      )}
+
       {/* Main Content Area - Full Height, No Scroll */}
       <div className="flex-1 min-h-0 flex flex-col min-w-0 h-full overflow-hidden">
         <ChatArea
@@ -51,6 +86,7 @@ export function ChatLayout() {
           selectedModel={selectedModel}
           isMobile={isMobile}
           onModelChange={setSelectedModel}
+          onConversationCreated={handleConversationCreated}
         />
       </div>
 
@@ -106,11 +142,31 @@ export function ChatLayout() {
             size="icon"
             variant="default"
             className="w-12 h-12 rounded-full shadow-lg"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+          <Button
+            size="icon"
+            variant="default"
+            className="w-12 h-12 rounded-full shadow-lg"
             onClick={() => setMemoryPanelOpen(!memoryPanelOpen)}
           >
             <Brain className="w-5 h-5" />
           </Button>
         </div>
+      )}
+
+      {/* Desktop Sidebar Toggle */}
+      {!isMobile && !sidebarOpen && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed top-4 left-4 z-30"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
       )}
 
       {/* Desktop Memory Toggle */}
