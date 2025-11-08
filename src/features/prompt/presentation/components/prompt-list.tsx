@@ -3,6 +3,7 @@
 import { PromptCard } from './prompt-card'
 import type { Prompt } from '../../prompt.interface'
 import { Sparkles } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface PromptListProps {
   prompts: Prompt[]
@@ -19,7 +20,15 @@ export function PromptList({
   onViewPrompt,
   onToggleFavorite,
 }: PromptListProps) {
-  if (isLoading) {
+  // Evitar mismatch de hidratação: garantir skeleton no primeiro render
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
+  const showLoading = isLoading || !hydrated
+
+  if (showLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (

@@ -143,6 +143,31 @@ export function getStarsArray(count: number): Array<{ key: number }> {
 }
 
 /**
+ * Trunca texto com sufixo de reticências quando excede o tamanho
+ */
+export function truncateText(text: string, maxLength = 120): string {
+  if (!text) return ''
+  if (text.length <= maxLength) return text
+  return text.slice(0, Math.max(0, maxLength - 1)).trimEnd() + '…'
+}
+
+/**
+ * Formata contagem de favoritos (ex: 1.2k)
+ */
+export function formatFavoriteCount(count: number): string {
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1)}m`
+  }
+  if (count >= 10000) {
+    return `${Math.round(count / 1000)}k`
+  }
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1)}k`
+  }
+  return String(count)
+}
+
+/**
  * Process variables in prompt content
  * Ex: "Olá {{nome}}, bem-vindo à {{empresa}}"
  * Variables: { nome: "João", empresa: "Acme Inc" }

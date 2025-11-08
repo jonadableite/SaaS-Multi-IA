@@ -55,12 +55,12 @@ interface Conversation {
 
 // Helper function to get provider icon path
 function getProviderIconPath(provider?: string): string {
-  if (!provider) return '/logomodelo.png'
+  if (!provider) return '/icon.svg'
 
   const providerLower = provider.toLowerCase()
   const iconMap: Record<string, string> = {
     whatlead: '/icon.svg',
-    fusion: '/logomodelo.png',
+    fusion: '/icon.svg',
     openai: '/gpt.png',
     anthropic: '/claude.png',
     google: '/gemini.png',
@@ -69,7 +69,7 @@ function getProviderIconPath(provider?: string): string {
     deepseek: '/1bb72c07-4584-4e37-9cce-324f8b6a7d8d_deepseeklogo.png',
   }
 
-  return iconMap[providerLower] || '/logomodelo.png'
+  return iconMap[providerLower] || '/icon.svg'
 }
 
 // Helper function to get model icon from conversation

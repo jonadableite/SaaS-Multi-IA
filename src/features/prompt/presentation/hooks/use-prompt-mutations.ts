@@ -69,24 +69,12 @@ export function usePromptMutations() {
     },
   })
 
-  const trackUsage = useMutation({
-    mutationFn: ({ params }: { params: { id: string } }) =>
-      client.prompt.trackUsage.query({ params }),
-    onSuccess: () => {
-      // Não precisa mostrar toast, é silencioso
-    },
-    onError: (error: Error) => {
-      console.error('Erro ao rastrear uso do prompt:', error)
-    },
-  })
-
   return {
     createPrompt,
     updatePrompt,
     deletePrompt,
     toggleFavorite,
     ratePrompt,
-    trackUsage,
   }
 }
 
