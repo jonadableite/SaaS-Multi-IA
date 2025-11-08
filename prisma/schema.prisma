@@ -111,6 +111,11 @@ model User {
   memories         Memory[]
   userApiKeys      UserApiKey[]
   usage            Usage[]
+  
+  // Prompt Library Relations
+  prompts          Prompt[]
+  promptFavorites  PromptFavorite[]
+  promptRatings    PromptRating[]
 
   @@unique([email])
   @@index([userPlan])
@@ -178,6 +183,9 @@ model Organization {
   submissions   Submission[]
   leads         Lead[]
   notifications Notification[]
+  
+  // Prompt Library Relations
+  prompts       Prompt[]
 
   customer Customer?
 
@@ -621,4 +629,97 @@ model UserApiKey {
   @@index([userId])
   @@index([key])
   @@map("user_api_key")
+}
+
+// ============================================
+// PROMPT LIBRARY SYSTEM
+// ============================================
+
+// Enum de escopo de visibilidade de prompts
+enum PromptScope {
+  USER         // Visível apenas para o criador
+  ORGANIZATION // Visível para toda a organização
+  GLOBAL       // Visível globalmente (marketplace público)
+}
+
+// Model principal de Prompt
+model Prompt {
+  id             String   @id @default(uuid())
+  
+  // Conteúdo do prompt
+  title          String   // Título do prompt (ex: "Assistente de Code Review")
+  description    String?  @db.Text // Descrição curta para exibição em cards
+  content        String   @db.Text // Conteúdo completo do prompt
+  
+  // Categorização e organização
+  category       String   // Categoria principal (Marketing, Código, Vendas, etc.)
+  tags           String[] // Tags adicionais para busca e filtros
+  
+  // Visibilidade e compartilhamento
+  isPublic       Boolean  @default(false) // Se false, apenas criador visualiza
+  scope          PromptScope @default(USER) // Escopo de visibilidade
+  
+  // Relacionamentos
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // Sub-entidades
+  favorites      PromptFavorite[]
+  ratings        PromptRating[]
+  
+  // Timestamps
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Indexes para otimização de queries
+  @@index([category])
+  @@index([organizationId])
+  @@index([userId])
+  @@index([isPublic, scope])
+  @@index([createdAt])
+  @@map("prompt")
+}
+
+// Model de favoritos (relação many-to-many entre User e Prompt)
+model PromptFavorite {
+  id        String   @id @default(uuid())
+  
+  promptId  String
+  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  // Garante que user não favorite o mesmo prompt múltiplas vezes
+  @@unique([promptId, userId])
+  @@index([userId])
+  @@index([promptId])
+  @@map("prompt_favorite")
+}
+
+// Model de avaliações/ratings de prompts
+model PromptRating {
+  id        String   @id @default(uuid())
+  
+  rating    Int      // Nota de 1 a 5 estrelas
+  
+  promptId  String
+  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // Permite atualização da avaliação
+  
+  // User só pode avaliar cada prompt uma vez (mas pode atualizar)
+  @@unique([promptId, userId])
+  @@index([promptId])
+  @@index([userId])
+  @@map("prompt_rating")
 }

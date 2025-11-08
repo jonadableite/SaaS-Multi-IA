@@ -71,10 +71,17 @@ export const ConversationProcedure = igniter.procedure({
 
             const where: any = {
               userId,
-              archived: params?.archived ?? undefined,
               starred: params?.starred ?? undefined,
               category: params?.category ?? undefined,
               createdAt: createdAtFilter,
+            }
+
+            // Add archived filter only if explicitly set to true (show archived)
+            // By default, don't filter by archived (show all conversations)
+            if (params?.archived === true) {
+              where.archived = true
+            } else if (params?.archived === false) {
+              where.archived = false
             }
 
             // Search by title or message content

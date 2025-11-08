@@ -8,6 +8,7 @@ import type {
 import { MessageRole } from "@/features/message/message.interface";
 import { UsageType } from "@/features/usage/usage.interface";
 import { AppError, AppErrorCode } from "@/utils/app-error";
+import { generateConversationTitle } from "../utils/generate-conversation-title";
 import crypto from "node:crypto";
 
 /**
@@ -82,11 +83,12 @@ export class ChatService {
     // Get or create conversation
     let conversationId = data.conversationId;
     if (!conversationId) {
-      const initialTitle = (data.content || "").slice(0, 60)
+      // Gera título inteligente baseado na primeira mensagem
+      const generatedTitle = generateConversationTitle(data.content);
       const conversation = await context.conversation.conversation.create(
         userId,
         {
-          title: initialTitle ? initialTitle : null,
+          title: generatedTitle,
         },
       );
       conversationId = conversation.id;

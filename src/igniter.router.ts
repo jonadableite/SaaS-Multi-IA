@@ -22,6 +22,7 @@ import { ConversationController } from './features/conversation/controllers/conv
 import { AgentController } from './features/agent/controllers/agent.controller'
 import { UsageController } from './features/usage/controllers/usage.controller'
 import { MemoryController } from './features/memory/controllers/memory.controller'
+import { PromptController } from './features/prompt/controllers/prompt.controller'
 
 /**
  * @router AppRouter
@@ -73,6 +74,7 @@ export const AppRouter = igniter.router({
     agent: AgentController, // AI agent management
     usage: UsageController, // Usage tracking and statistics
     memory: MemoryController, // User memory management
+    prompt: PromptController, // Prompt library management
 
     // Admin controllers - Super-administrative functionality
     admin: AdminController, // Administrative operations

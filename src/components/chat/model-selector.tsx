@@ -110,7 +110,7 @@ export function ModelSelector({ selected, onSelect }: ModelSelectorProps) {
       case 'pro':
         return <Badge className="bg-blue-500">Pro</Badge>
       case 'premium':
-        return <Badge className="bg-purple-500">Premium</Badge>
+        return <Badge className="bg-blue-600">Premium</Badge>
     }
   }
 
@@ -122,7 +122,7 @@ export function ModelSelector({ selected, onSelect }: ModelSelectorProps) {
           className="min-w-[200px] justify-between"
         >
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
+            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-whatlead flex items-center justify-center text-white">
               {selectedModel.icon}
             </div>
             <span className="font-medium">{selectedModel.name}</span>
@@ -148,12 +148,11 @@ export function ModelSelector({ selected, onSelect }: ModelSelectorProps) {
                 onSelect(model.id)
                 setOpen(false)
               }}
-              className={`p-3 cursor-pointer ${
-                model.id === selected ? 'bg-blue-50 dark:bg-blue-950/20' : ''
-              }`}
+              className={`p-3 cursor-pointer ${model.id === selected ? 'bg-blue-50 dark:bg-blue-950/20' : ''
+                }`}
             >
               <div className="flex items-start space-x-3 w-full">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-whatlead flex items-center justify-center text-white flex-shrink-0">
                   {model.icon}
                 </div>
 

@@ -58,7 +58,12 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <Toaster position="top-center" />
-            <IgniterProvider>
+            <IgniterProvider
+              options={{
+                enableRealtime: false,
+                autoReconnect: false,
+              }}
+            >
               <DemoPromoBar />
               <Suspense>{children}</Suspense>
             </IgniterProvider>

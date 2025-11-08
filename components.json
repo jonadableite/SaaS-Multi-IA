@@ -3,7 +3,6 @@
   "style": "new-york",
   "rsc": true,
   "tsx": true,
-  "iconLibrary": "lucide",
   "tailwind": {
     "config": "tailwind.config.ts",
     "css": "src/app/globals.css",
@@ -11,6 +10,7 @@
     "cssVariables": true,
     "prefix": ""
   },
+  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components/ui",
     "utils": "@/utils/cn",
@@ -19,7 +19,10 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@kibo-ui": { "url": "https://www.kibo-ui.com/r/{name}.json" },
-    "@tailark": "https://tailark.com/r/{name}.json"
+    "@kibo-ui": {
+      "url": "https://www.kibo-ui.com/r/{name}.json"
+    },
+    "@tailark": "https://tailark.com/r/{name}.json",
+    "@magicui": "https://magicui.design/r/{name}.json"
   }
 }

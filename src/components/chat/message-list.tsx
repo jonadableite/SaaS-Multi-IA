@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Loader2 } from 'lucide-react'
 import { Message } from './message'
 
@@ -19,7 +18,7 @@ export function MessageList({ messages, isLoading, isMobile }: MessageListProps)
   }, [messages])
 
   return (
-    <ScrollArea className="flex-1 px-4 py-6">
+    <div className="h-full px-4 py-6">
       <div className="max-w-4xl mx-auto space-y-6">
         {messages.map((message, index) => (
           <Message
@@ -39,7 +38,7 @@ export function MessageList({ messages, isLoading, isMobile }: MessageListProps)
 
         <div ref={bottomRef} />
       </div>
-    </ScrollArea>
+    </div>
   )
 }
 

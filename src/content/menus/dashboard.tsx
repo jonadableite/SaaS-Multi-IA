@@ -6,6 +6,7 @@ import {
   Users2Icon,
   Layers2Icon,
   MessageSquareIcon,
+  Sparkles,
 } from 'lucide-react'
 
 export const dashboardSidebarMenu = {
@@ -21,11 +22,25 @@ export const dashboardSidebarMenu = {
           icon: MessageSquareIcon,
         },
         {
-          id: 'sidebar_integrations',
-          title: 'Apps',
-          url: '/app/integrations',
-          icon: PuzzleIcon,
+          id: 'sidebar_prompts',
+          title: 'Prompts',
+          url: '/app/prompts',
+          icon: Sparkles,
         },
+        {
+          id: 'sidebar_disparos',
+          title: 'Disparos',
+          url: 'https://acesso.whatlead.com.br/',
+          icon: PuzzleIcon,
+          external: true,
+        },
+
+        // {
+        //   id: 'sidebar_integrations',
+        //   title: 'Apps',
+        //   url: '/app/integrations',
+        //   icon: PuzzleIcon,
+        // },
         {
           id: 'sidebar_settings',
           title: 'Settings',

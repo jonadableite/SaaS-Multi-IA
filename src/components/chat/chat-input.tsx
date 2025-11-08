@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { BorderBeam } from '@/components/ui/border-beam'
 import { cn } from '@/utils/cn'
 import { ToolsMenu } from './tools-menu'
 import { ModelSelectorDialog } from './model-selector-dialog'
@@ -161,7 +162,7 @@ export function ChatInput({
   }
 
   return (
-    <div className="border-t border-border bg-background">
+    <div className="bg-background">
       {showTools && (
         <ToolsMenu
           onSelect={insertTemplate}
@@ -226,150 +227,157 @@ export function ChatInput({
         )}
 
         <div className="max-w-4xl mx-auto">
-          {/* Model Selector Button */}
-          <div className="mb-2 px-2">
-            <ModelSelectorButton
-              selectedModel={selectedModel}
-              onOpenDialog={() => setModelSelectorOpen(true)}
-            />
-          </div>
-
           <div
             className={cn(
-              'relative flex items-end space-x-2 bg-muted rounded-2xl p-2 transition-all',
-              'border-2 border-transparent focus-within:border-primary focus-within:bg-background',
+              'relative flex flex-col glass-effect-strong rounded-2xl p-3 transition-all-smooth focus-glow',
+              'border-2 border-transparent focus-within:border-primary/50 focus-within:shadow-glow',
               isOverLimit &&
               'border-destructive focus-within:border-destructive',
             )}
           >
-            <div className="flex-1 min-w-0">
-              <Textarea
-                ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={
-                  disabled
-                    ? 'Crie uma nova conversa para começar...'
-                    : 'Mensagem para o Inner AI'
-                }
-                disabled={disabled || isLoading || isRecording}
-                className={cn(
-                  'min-h-[44px] max-h-[200px] resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2',
-                  isMobile && 'max-h-[120px]',
-                  'placeholder:text-muted-foreground',
-                )}
-                rows={1}
-              />
+            {/* Border Beam Animation */}
+            <BorderBeam
+              size={250}
+              duration={12}
+              delay={0}
+              colorFrom="#2563eb"
+              colorTo="#1d4ed8"
+            />
 
-              {charCount > 0 && (
-                <div className="flex items-center justify-between px-2 pb-1">
-                  <span
-                    className={cn(
-                      'text-xs',
-                      isOverLimit
-                        ? 'text-destructive font-medium'
-                        : charCount > maxChars * 0.8
-                          ? 'text-yellow-600'
-                          : 'text-muted-foreground',
-                    )}
-                  >
-                    {charCount.toLocaleString()} / {maxChars.toLocaleString()}
+            {/* Model Selector Button - Integrated */}
+            <div className="flex items-center justify-between mb-2 px-1">
+              <ModelSelectorButton
+                selectedModel={selectedModel}
+                onOpenDialog={() => setModelSelectorOpen(true)}
+              />
+              {isLoading && (
+                <div className="flex items-center space-x-2 text-xs animate-fade-in-scale">
+                  <Loader2 className="w-3 h-3 animate-spin text-primary" />
+                  <span className="gradient-text font-medium">
+                    Gerando resposta...
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center space-x-1 flex-shrink-0 mb-1">
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                onChange={handleFileSelect}
-                className="hidden"
-                accept="image/*,video/*,.pdf,.doc,.docx,.txt,.csv,.xls,.xlsx"
-              />
-
-              {!isLoading && !isRecording && (
-                <>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowTools(!showTools)}
-                    disabled={disabled}
-                    className="h-9 w-9"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={disabled}
-                    className="h-9 w-9"
-                  >
-                    <Paperclip className="w-4 h-4" />
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsRecording(true)}
-                    disabled={disabled}
-                    className="h-9 w-9"
-                  >
-                    <Mic className="w-4 h-4" />
-                  </Button>
-                </>
-              )}
-
-              {isLoading ? (
-                <Button
-                  type="button"
-                  onClick={onStop}
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Square className="w-4 h-4 fill-current" />
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={handleSend}
-                  disabled={
-                    disabled ||
-                    (!input.trim() && attachments.length === 0) ||
-                    isOverLimit ||
-                    isRecording
-                  }
-                  size="icon"
+            {/* Input Area */}
+            <div className="flex items-end space-x-2">
+              <div className="flex-1 min-w-0">
+                <Textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Digite sua mensagem..."
+                  disabled={disabled || isLoading || isRecording}
                   className={cn(
-                    'h-9 w-9 transition-all',
-                    !disabled &&
-                      (input.trim() || attachments.length > 0) &&
-                      !isOverLimit
-                      ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg scale-105'
-                      : '',
+                    'min-h-[44px] max-h-[200px] resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2',
+                    isMobile && 'max-h-[120px]',
+                    'placeholder:text-muted-foreground',
                   )}
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </div>
+                  rows={1}
+                />
 
-          <div className="flex items-center justify-between mt-2 px-2">
-            {isLoading && (
-              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                <span>Gerando resposta...</span>
+                {charCount > 0 && (
+                  <div className="flex items-center justify-between px-2 pb-1">
+                    <span
+                      className={cn(
+                        'text-xs',
+                        isOverLimit
+                          ? 'text-destructive font-medium'
+                          : charCount > maxChars * 0.8
+                            ? 'text-yellow-600'
+                            : 'text-muted-foreground',
+                      )}
+                    >
+                      {charCount.toLocaleString()} / {maxChars.toLocaleString()}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
+
+              <div className="flex items-center space-x-1 flex-shrink-0 mb-1">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  accept="image/*,video/*,.pdf,.doc,.docx,.txt,.csv,.xls,.xlsx"
+                />
+
+                {!isLoading && !isRecording && (
+                  <>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowTools(!showTools)}
+                      disabled={disabled}
+                      className="h-9 w-9"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={disabled}
+                      className="h-9 w-9"
+                    >
+                      <Paperclip className="w-4 h-4" />
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsRecording(true)}
+                      disabled={disabled}
+                      className="h-9 w-9"
+                    >
+                      <Mic className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+
+                {isLoading ? (
+                  <Button
+                    type="button"
+                    onClick={onStop}
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Square className="w-4 h-4 fill-current" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={handleSend}
+                    disabled={
+                      disabled ||
+                      (!input.trim() && attachments.length === 0) ||
+                      isOverLimit ||
+                      isRecording
+                    }
+                    size="icon"
+                    className={cn(
+                      'h-10 w-10 transition-all-smooth rounded-xl',
+                      !disabled &&
+                        (input.trim() || attachments.length > 0) &&
+                        !isOverLimit
+                        ? 'bg-gradient-to-br from-primary via-blue-600 to-blue-600 hover:from-primary/90 hover:via-blue-600/90 hover:to-blue-600/90 text-primary-foreground shadow-glow animate-pulse-glow scale-105 hover:scale-110'
+                        : 'bg-muted',
+                    )}
+                  >
+                    <Send className="w-5 h-5" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -391,6 +399,7 @@ export function ChatInput({
 // Helper function to get icon path by provider
 function getProviderIconPath(provider: string): string {
   const providerIcons: Record<string, string> = {
+    WhatLead: '/logomodelo.png',
     OpenAI: '/gpt.png',
     Anthropic: '/claude.png',
     Google: '/gemini.png',
@@ -398,7 +407,7 @@ function getProviderIconPath(provider: string): string {
     Meta: '/llama.png',
     DeepSeek: '/1bb72c07-4584-4e37-9cce-324f8b6a7d8d_deepseeklogo.png',
   }
-  return providerIcons[provider] || '/icon.svg'
+  return providerIcons[provider] || '/logomodelo.png'
 }
 
 // Helper function to get model info by ID
@@ -411,6 +420,10 @@ function getModelInfo(modelId: string): {
     'claude-4.5-sonnet-thinking': {
       name: 'Claude 4.5 Sonnet Thinking',
       provider: 'Anthropic',
+    },
+    'whatlead-fusion': {
+      name: 'WhatLead AI Fusion',
+      provider: 'WhatLead',
     },
     'gpt-4-turbo': {
       name: 'GPT-4 Turbo',

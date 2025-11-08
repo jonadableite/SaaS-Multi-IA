@@ -5,9 +5,9 @@ import { api } from '@/igniter.client'
 import { ChatLayout } from '@/components/chat/chat-layout'
 
 export const metadata: Metadata = {
-  title: 'Chat Multi-IA | Converse com Inteligência Artificial',
+  title: 'WhatLead IA | Converse com Inteligência Artificial',
   description:
-    'Converse com os melhores modelos de IA do mundo: OpenAI, Anthropic e Google.',
+    'Converse com os melhores modelos de IA do mundo através da WhatLead IA.',
 }
 
 export const dynamic = 'force-dynamic'

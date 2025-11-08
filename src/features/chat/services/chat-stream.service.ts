@@ -9,6 +9,7 @@ import type { ChatMessageBody } from "@/features/message/message.interface";
 import { MessageRole } from "@/features/message/message.interface";
 import { UsageType } from "@/features/usage/usage.interface";
 import { AppError, AppErrorCode } from "@/utils/app-error";
+import { generateConversationTitle } from "../utils/generate-conversation-title";
 import crypto from "node:crypto";
 
 export interface StreamChunk {
@@ -107,9 +108,11 @@ export class ChatStreamService {
       // Get or create conversation
       console.log("[ChatStreamService] Getting/creating conversation");
       if (!conversationId) {
+        // Gera título inteligente baseado na primeira mensagem
+        const generatedTitle = generateConversationTitle(data.content);
         const conversation = await context.conversation.conversation.create(
           userId,
-          { title: null },
+          { title: generatedTitle },
         );
         conversationId = conversation.id;
       } else {
@@ -168,7 +171,7 @@ export class ChatStreamService {
       const model =
         data.model ||
         this.aiRouter.getAvailableModels(
-          provider as "openai" | "anthropic" | "google",
+          provider as "openai" | "anthropic" | "google" | "fusion",
         )[0];
 
       // Ensure user has initial credits (if they have 0 credits)
@@ -209,7 +212,7 @@ export class ChatStreamService {
       let aiResponse;
       try {
         aiResponse = await this.aiRouter.chat(
-          provider as "openai" | "anthropic" | "google",
+          provider as "openai" | "anthropic" | "google" | "fusion",
           {
             model,
             messages: conversationHistory,

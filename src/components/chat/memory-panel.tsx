@@ -67,20 +67,20 @@ export function MemoryPanel({ onClose }: MemoryPanelProps) {
 
   const filteredMemories = memories.filter(m => {
     if (selectedCategory && m.category !== selectedCategory) return false
-    if (search && !m.key.toLowerCase().includes(search.toLowerCase()) && 
-        !m.value.toLowerCase().includes(search.toLowerCase())) {
+    if (search && !m.key.toLowerCase().includes(search.toLowerCase()) &&
+      !m.value.toLowerCase().includes(search.toLowerCase())) {
       return false
     }
     return true
   })
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800">
+    <div className="h-full flex flex-col bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <Brain className="w-5 h-5 text-purple-600" />
+            <Brain className="w-5 h-5 text-blue-600" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Memórias
             </h2>
@@ -178,10 +178,10 @@ export function MemoryPanel({ onClose }: MemoryPanelProps) {
 
       {/* Memories List */}
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-3">
+        <div className="p-6 space-y-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filteredMemories.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
@@ -192,7 +192,7 @@ export function MemoryPanel({ onClose }: MemoryPanelProps) {
             filteredMemories.map((memory) => (
               <div
                 key={memory.id}
-                className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all group"
+                className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all group shadow-sm hover:shadow-md hover:shadow-blue-500/20 dark:hover:shadow-blue-500/30"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">

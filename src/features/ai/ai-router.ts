@@ -2,13 +2,14 @@ import type { AIProvider, AIProviderConfig, ChatOptions, ChatResponse } from './
 import { OpenAIProvider } from './providers/openai.provider'
 import { AnthropicProvider } from './providers/anthropic.provider'
 import { GoogleProvider } from './providers/google.provider'
+import { FusionProvider } from './providers/fusion.provider'
 import { AppError, AppErrorCode } from '@/utils/app-error'
 
 /**
  * @type ProviderName
  * @description Supported AI provider names
  */
-export type ProviderName = 'openai' | 'anthropic' | 'google'
+export type ProviderName = 'openai' | 'anthropic' | 'google' | 'fusion'
 
 /**
  * @interface ProviderConfigMap
@@ -18,6 +19,7 @@ export interface ProviderConfigMap {
   openai?: AIProviderConfig
   anthropic?: AIProviderConfig
   google?: AIProviderConfig
+  fusion?: AIProviderConfig
 }
 
 /**
@@ -46,6 +48,9 @@ export class AIRouter {
     if (configs.google) {
       this.providers.set('google', new GoogleProvider(configs.google))
     }
+
+    // Fusion provider is added via addFusionProvider() after router creation
+    // to avoid circular dependency
   }
 
   /**
@@ -97,6 +102,26 @@ export class AIRouter {
   }
 
   /**
+   * @method addFusionProvider
+   * @description Add Fusion provider after router is created (to avoid circular dependency)
+   */
+  addFusionProvider(): void {
+    // Fusion is always available if we have at least one other provider
+    const availableProviders = this.getAvailableProviders()
+    if (availableProviders.length > 0 && !this.providers.has('fusion')) {
+      this.providers.set(
+        'fusion',
+        new FusionProvider(
+          {
+            apiKey: process.env.OPENAI_API_KEY || '', // Required for intent classification
+          },
+          this,
+        ),
+      )
+    }
+  }
+
+  /**
    * @static createFromEnv
    * @description Create AIRouter from environment variables
    */
@@ -130,7 +155,10 @@ export class AIRouter {
       }
     }
 
-    return new AIRouter(configs)
+    const router = new AIRouter(configs)
+    // Add Fusion provider after router is created
+    router.addFusionProvider()
+    return router
   }
 }
 

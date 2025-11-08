@@ -142,7 +142,7 @@ export function ToolsMenu({ onSelect, onClose }: ToolsMenuProps) {
       <div className="max-w-4xl mx-auto p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <Sparkles className="w-5 h-5 text-purple-600" />
+            <Sparkles className="w-5 h-5 text-whatlead" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Ferramentas & Templates
             </h3>
@@ -191,7 +191,7 @@ export function ToolsMenu({ onSelect, onClose }: ToolsMenuProps) {
                 className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all text-left group"
               >
                 <div className="flex items-start space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-whatlead flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform">
                     {tool.icon}
                   </div>
                   <div className="flex-1 min-w-0">

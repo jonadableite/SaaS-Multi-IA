@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Sparkles, X, ExternalLink, Upload } from 'lucide-react'
 import { MessageList } from './message-list'
 import { ChatInput } from './chat-input'
 import { AgentSelector } from './agent-selector'
+import { ChatEmptyState } from './chat-empty-state'
 import { api } from '@/igniter.client'
 import { Button } from '@/components/ui/button'
 import { useChatStream } from '@/hooks/useChatStream'
@@ -14,11 +16,15 @@ interface ChatAreaProps {
   selectedModel: string
   isMobile: boolean
   onModelChange?: (model: string) => void
+  onConversationCreated?: (conversationId: string) => void
 }
 
 // Helper function to extract provider from model ID
 function getProviderFromModel(modelId: string): string {
   const modelLower = modelId.toLowerCase()
+  if (modelLower.includes('whatlead-fusion') || modelLower.includes('fusion')) {
+    return 'fusion'
+  }
   if (modelLower.includes('gpt') || modelLower.includes('o1')) {
     return 'openai'
   }
@@ -45,15 +51,34 @@ export function ChatArea({
   selectedModel,
   isMobile,
   onModelChange,
+  onConversationCreated,
 }: ChatAreaProps) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [messages, setMessages] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [activeAgentId, setActiveAgentId] = useState<string | null>(null)
   const [activeAgentName, setActiveAgentName] = useState<string | null>(null)
-  const [conversationTitle, setConversationTitle] = useState<string | null>(null)
+  const [conversationTitle, setConversationTitle] = useState<string | null>(
+    null,
+  )
   const abortControllerRef = useRef<AbortController | null>(null)
   const { connect: connectStream, disconnect: disconnectStream } =
     useChatStream()
+
+  // Handle prompt from query param (from Prompt Library)
+  useEffect(() => {
+    const promptFromUrl = searchParams.get('prompt')
+    if (promptFromUrl && !conversationId && messages.length === 0) {
+      // Remove prompt from URL
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('prompt')
+      router.replace(`/app${newParams.toString() ? `?${newParams.toString()}` : ''}`)
+      
+      // Send prompt as message
+      handleSendMessage(promptFromUrl)
+    }
+  }, [searchParams])
 
   // Load messages when conversation changes
   useEffect(() => {
@@ -62,6 +87,8 @@ export function ChatArea({
     } else {
       setMessages([])
       setConversationTitle(null)
+      setActiveAgentId(null)
+      setActiveAgentName(null)
     }
   }, [conversationId])
 
@@ -80,7 +107,9 @@ export function ChatArea({
               role: msg.role.toLowerCase(),
               content: msg.content,
               model: msg.model || selectedModel,
-              provider: msg.provider || getProviderFromModel(msg.model || selectedModel),
+              provider:
+                msg.provider ||
+                getProviderFromModel(msg.model || selectedModel),
               timestamp: new Date(msg.createdAt),
             })),
           )
@@ -162,7 +191,8 @@ export function ChatArea({
           )
         } else if (message.type === 'metadata' && message.data) {
           streamModel = message.data.model || selectedModel
-          const metadataProvider = message.data.provider || getProviderFromModel(streamModel)
+          const metadataProvider =
+            message.data.provider || getProviderFromModel(streamModel)
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantMessageId
@@ -180,6 +210,12 @@ export function ChatArea({
           )
           setIsLoading(false)
           disconnectStream()
+
+          // Update conversationId if a new conversation was created
+          const newConversationId = message.data?.conversationId
+          if (newConversationId && !conversationId) {
+            onConversationCreated?.(newConversationId)
+          }
         } else if (message.type === 'error') {
           setMessages((prev) =>
             prev.map((msg) =>
@@ -280,21 +316,27 @@ export function ChatArea({
   }
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col bg-background overflow-hidden">
-      {/* Chat Header */}
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative h-full">
+      {/* Chat Header with Glass Effect - Fixed at top */}
       {conversationId && conversationTitle && (
-        <div className="border-b border-border px-6 py-4">
+        <div className="glass-effect border-b border-border/50 px-6 py-4 animate-fade-in-scale shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-foreground mb-1">
+              <h1 className="text-xl font-bold gradient-text mb-1">
                 {conversationTitle}
               </h1>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{selectedModel}</span>
+                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                  {selectedModel}
+                </span>
                 <ExternalLink className="w-4 h-4" />
               </div>
             </div>
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="glass-effect hover-lift"
+            >
               <Upload className="w-5 h-5" />
             </Button>
           </div>
@@ -302,100 +344,44 @@ export function ChatArea({
       )}
 
       {messages.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="text-center max-w-2xl">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-              <Sparkles className="w-10 h-10 text-primary-foreground" />
-            </div>
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              Como posso ajudar você hoje?
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              Escolha um modelo de IA ou execute um agente para começar.
-            </p>
-
-            {activeAgentName && (
-              <div className="mb-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-primary">
-                      Agente ativo: {activeAgentName}
-                    </span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setActiveAgentId(null)
-                      setActiveAgentName(null)
-                    }}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            <div className="mb-6 flex justify-center">
-              <AgentSelector onSelectAgent={handleSelectAgent} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
-              {[
-                {
-                  title: '📝 Escrever',
-                  description: 'Criar conteúdo, emails e documentos',
-                  action: 'Me ajude a escrever um email profissional',
-                },
-                {
-                  title: '💡 Ideias',
-                  description: 'Brainstorming e criatividade',
-                  action: 'Me dê ideias para um projeto de startup',
-                },
-                {
-                  title: '🔍 Pesquisar',
-                  description: 'Buscar informações e análises',
-                  action: 'Pesquise sobre as últimas tendências em IA',
-                },
-                {
-                  title: '💻 Código',
-                  description: 'Programação e desenvolvimento',
-                  action: 'Me ajude a criar uma função em Python',
-                },
-              ].map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSendMessage(item.action)}
-                  className="p-4 rounded-xl border-2 border-border hover:border-primary transition-all text-left group bg-card hover:bg-card/80"
-                >
-                  <div className="text-2xl mb-2">{item.title}</div>
-                  <p className="text-sm text-muted-foreground group-hover:text-foreground">
-                    {item.description}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
+        /* Empty State with Centered Input */
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+          <ChatEmptyState 
+            onPromptSelect={handleSendMessage}
+            selectedModel={selectedModel}
+            onModelChange={onModelChange}
+            onSend={handleSendMessage}
+            isLoading={isLoading}
+            onStop={handleStopGenerating}
+            isMobile={isMobile}
+          />
         </div>
       ) : (
-        <MessageList
-          messages={messages}
-          isLoading={isLoading}
-          isMobile={isMobile}
-        />
-      )}
+        <>
+          {/* Messages Area - Scrollable */}
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+            <MessageList
+              messages={messages}
+              isLoading={isLoading}
+              isMobile={isMobile}
+            />
+          </div>
 
-      <ChatInput
-        onSend={handleSendMessage}
-        isLoading={isLoading}
-        onStop={handleStopGenerating}
-        isMobile={isMobile}
-        disabled={!conversationId && messages.length === 0}
-        selectedModel={selectedModel}
-        onModelChange={(modelId) => {
-          onModelChange?.(modelId)
-        }}
-      />
+          {/* Chat Input - Fixed at bottom */}
+          <div className="shrink-0">
+            <ChatInput
+              onSend={handleSendMessage}
+              isLoading={isLoading}
+              onStop={handleStopGenerating}
+              isMobile={isMobile}
+              selectedModel={selectedModel}
+              onModelChange={(modelId) => {
+                onModelChange?.(modelId)
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   )
 }

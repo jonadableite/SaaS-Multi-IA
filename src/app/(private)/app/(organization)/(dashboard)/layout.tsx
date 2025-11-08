@@ -42,24 +42,32 @@ export default async function Layout({ children }: PropsWithChildren) {
         cardComponent={TourCard}
         cardTransition={{ duration: 0.6, type: 'tween' }}
       >
-        <div className="grid md:grid-cols-[auto_1fr] relative dark:bg-background">
-          <DashboardMainSidebar className="sticky top-0" />
-          <main className="md:p-4 md:pl-0">
+        <div className="grid md:grid-cols-[auto_1fr] relative dark:bg-background h-screen overflow-hidden">
+          <DashboardMainSidebar className="sticky top-0 h-screen overflow-y-auto" />
+          <main className="md:p-4 md:pl-0 h-screen overflow-hidden flex flex-col">
             {/* Show trial expiration banner for trial subscriptions (only if payment is enabled) */}
             {subscription?.status === 'trialing' &&
               subscription.trialDays !== null && (
-                <TrialExpirationBanner
-                  organizationId={session.data.organization.id}
-                  trialDays={subscription.trialDays}
-                />
+                <div className="shrink-0">
+                  <TrialExpirationBanner
+                    organizationId={session.data.organization.id}
+                    trialDays={subscription.trialDays}
+                  />
+                </div>
               )}
             {validationResult?.gracePeriodStatus && (
-              <GracePeriodBanner
-                gracePeriodStatus={validationResult.gracePeriodStatus}
-                className="mx-4 mt-4"
-              />
+              <div className="shrink-0">
+                <GracePeriodBanner
+                  gracePeriodStatus={validationResult.gracePeriodStatus}
+                  className="mx-4 mt-4"
+                />
+              </div>
             )}
-            {children}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <div className="h-full -m-4 md:m-0">
+                {children}
+              </div>
+            </div>
           </main>
         </div>
         <DashboardMobileNavMenu />

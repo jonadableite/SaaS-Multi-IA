@@ -27,7 +27,7 @@ interface MessageProps {
 // Helper function to get provider icon path
 function getProviderIconPath(provider?: string): string {
   if (!provider) return '/icon.svg'
-  
+
   const providerLower = provider.toLowerCase()
   const iconMap: Record<string, string> = {
     openai: '/gpt.png',
@@ -37,7 +37,7 @@ function getProviderIconPath(provider?: string): string {
     meta: '/llama.png',
     deepseek: '/1bb72c07-4584-4e37-9cce-324f8b6a7d8d_deepseeklogo.png',
   }
-  
+
   return iconMap[providerLower] || '/icon.svg'
 }
 
@@ -50,15 +50,15 @@ export function Message({ message, isLast, isMobile }: MessageProps) {
   // Lazy-load remark-gfm to avoid build-time dependency issues
   useEffect(() => {
     let mounted = true
-    ;(async () => {
-      try {
-        const mod = await import('remark-gfm')
-        if (mounted) setRemarkPlugins([mod.default])
-      } catch (err) {
-        // If plugin is unavailable, render without GFM enhancements
-        if (mounted) setRemarkPlugins([])
-      }
-    })()
+      ; (async () => {
+        try {
+          const mod = await import('remark-gfm')
+          if (mounted) setRemarkPlugins([mod.default])
+        } catch (err) {
+          // If plugin is unavailable, render without GFM enhancements
+          if (mounted) setRemarkPlugins([])
+        }
+      })()
     return () => {
       mounted = false
     }
@@ -84,7 +84,7 @@ export function Message({ message, isLast, isMobile }: MessageProps) {
     <div
       className={`
         flex items-start space-x-3 group
-        ${isUser ? 'flex-row-reverse space-x-reverse' : ''}
+        ${isUser ? 'flex-row-reverse space-x-reverse animate-slide-in-right' : 'animate-slide-in-left'}
         ${message.isStreaming ? 'animate-pulse' : ''}
       `}
     >
@@ -119,10 +119,10 @@ export function Message({ message, isLast, isMobile }: MessageProps) {
           className={`
             max-w-[85%] ${isMobile ? 'max-w-full' : ''}
             ${isUser
-              ? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl rounded-tr-sm'
-              : 'bg-card text-foreground rounded-2xl rounded-tl-sm border border-border'
+              ? 'bg-gradient-to-br from-primary via-primary/90 to-blue-600 text-primary-foreground rounded-2xl rounded-tr-sm shadow-glow'
+              : 'glass-effect-strong text-foreground rounded-2xl rounded-tl-sm border border-border/50'
             }
-            px-4 py-3 shadow-sm
+            px-4 py-3 transition-all-smooth hover-lift
           `}
         >
           {!isUser && message.model && (
@@ -183,9 +183,9 @@ export function Message({ message, isLast, isMobile }: MessageProps) {
 
           {message.isStreaming && (
             <div className="flex items-center space-x-1 mt-2">
-              <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-2 h-2 bg-current rounded-full animate-typing-dot" style={{ animationDelay: '0ms' }} />
+              <div className="w-2 h-2 bg-current rounded-full animate-typing-dot" style={{ animationDelay: '200ms' }} />
+              <div className="w-2 h-2 bg-current rounded-full animate-typing-dot" style={{ animationDelay: '400ms' }} />
             </div>
           )}
         </div>

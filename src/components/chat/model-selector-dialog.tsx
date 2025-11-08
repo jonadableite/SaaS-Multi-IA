@@ -36,10 +36,20 @@ function getProviderIcon(provider: string): string {
     Meta: '/llama.png',
     DeepSeek: '/1bb72c07-4584-4e37-9cce-324f8b6a7d8d_deepseeklogo.png',
   }
-  return providerIcons[provider] || '/icon.svg'
+  return providerIcons[provider] || '/logomodelo.png'
 }
 
 const models: Model[] = [
+  // WhatLead AI Fusion - Roteador Inteligente
+  {
+    id: 'whatlead-fusion',
+    name: 'WhatLead AI Fusion',
+    provider: 'WhatLead',
+    iconPath: '/logomodelo.png', // You can add a custom icon later
+    description: 'Roteador inteligente que seleciona automaticamente o melhor modelo para cada tarefa',
+    category: 'advanced',
+    tier: 'premium',
+  },
   // Rápido
   {
     id: 'gpt-5-mini',
@@ -217,8 +227,9 @@ export function ModelSelectorDialog({
     )
   }, [search])
 
+  const fusionModels = filteredModels.filter((m) => m.id === 'whatlead-fusion')
   const fastModels = filteredModels.filter((m) => m.category === 'fast')
-  const advancedModels = filteredModels.filter((m) => m.category === 'advanced')
+  const advancedModels = filteredModels.filter((m) => m.category === 'advanced' && m.id !== 'whatlead-fusion')
   const reasoningModels = filteredModels.filter(
     (m) => m.category === 'reasoning',
   )
@@ -233,7 +244,7 @@ export function ModelSelectorDialog({
       case 'pro':
         return <Badge className="bg-blue-500">Pro</Badge>
       case 'premium':
-        return <Badge className="bg-purple-500">Premium</Badge>
+        return <Badge className="bg-blue-600">Premium</Badge>
     }
     return null
   }
@@ -286,6 +297,19 @@ export function ModelSelectorDialog({
 
             <ScrollArea className="flex-1 px-6 py-4">
               <div className="space-y-8">
+                {/* WhatLead AI Fusion - Destaque especial */}
+                {fusionModels.length > 0 && (
+                  <ModelCategory
+                    title="🧠 Roteador Inteligente"
+                    description="Seleciona automaticamente o melhor modelo de IA para cada tarefa, eliminando a necessidade de conhecer detalhes técnicos"
+                    iconPath="/logomodelo.png"
+                    models={fusionModels}
+                    selectedModel={selectedModel}
+                    onSelectModel={onSelectModel}
+                    getTierBadge={getTierBadge}
+                  />
+                )}
+
                 {/* Rápido ⚡ */}
                 {fastModels.length > 0 && (
                   <ModelCategory

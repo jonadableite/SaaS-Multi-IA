@@ -18,9 +18,8 @@ import { useEffect, useState } from 'react'
  * delayed by the specified delay period. This value is updated only after the delay period has passed
  * without any new changes to the value.
  */
-function useDebounce<T>(value: T, delay: number): { debouncedValue: T } {
-  // State and setters for debounced value
-  const [debouncedValue, setDebouncedValue] = useState(value)
+export function useDebounce<T>(value: T, delay = 300): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
   useEffect(() => {
     // If the value is a string and it's empty after trimming, update the debounced value immediately
@@ -41,7 +40,6 @@ function useDebounce<T>(value: T, delay: number): { debouncedValue: T } {
     }
   }, [value, delay]) // Only re-call effect if value or delay changes
 
-  return { debouncedValue }
+  return debouncedValue
 }
-
 export default useDebounce

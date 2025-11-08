@@ -2,7 +2,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: 'class',
+  darkMode: "class",
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
@@ -30,6 +30,10 @@ const config: Config = {
         "tremor-full": "9999px",
       },
       colors: {
+        whatlead: {
+          DEFAULT: "#15112e",
+          foreground: "#0f0e13",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
