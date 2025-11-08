@@ -33,6 +33,7 @@ import { NewChatButton } from './new-chat-button'
 import { ConversationHistorySection } from './conversation-history-section'
 import { Separator } from '@/components/ui/separator'
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler'
+import { ChatSidebarFooter } from '@/components/chat/chat-sidebar-footer'
 
 export function DashboardMainSidebar({ className }: { className?: string }) {
   const pathname = usePathname()
@@ -87,7 +88,7 @@ export function DashboardMainSidebar({ className }: { className?: string }) {
           </span>
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent className="overflow-x-hidden flex flex-col gap-4 flex-1 min-h-0">
           <SidebarGroup key="sidebar-toolbar" className="w-full">
             <SidebarGroupContent className="w-full">
               <OrganizationDashboardSidebarSelector />
@@ -105,13 +106,12 @@ export function DashboardMainSidebar({ className }: { className?: string }) {
 
           {/* Chat History - Only on chat page */}
           {isChatPage && (
-            <>
+            <div className="flex-1 min-h-0">
               <ConversationHistorySection
                 onConversationSelect={handleConversationSelect}
                 currentConversationId={currentConversationId}
               />
-              <Separator className="my-2" />
-            </>
+            </div>
           )}
 
           {/* Navigation Menu - Always visible */}
@@ -178,8 +178,8 @@ export function DashboardMainSidebar({ className }: { className?: string }) {
           )}
         </SidebarContent>
 
-        <SidebarFooter className="flex flex-col pt-0 h-auto space-y-4">
-          <BillingDashboardSidebarUpgradeCard />
+        <SidebarFooter className="flex flex-col pt-0 h-auto space-y-4 z-10">
+          <ChatSidebarFooter />
         </SidebarFooter>
       </SidebarMenu>
 

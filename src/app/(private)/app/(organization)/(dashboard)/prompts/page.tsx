@@ -65,9 +65,11 @@ export default function PromptsPage() {
 
   const handleFormSubmit = async (data: CreatePromptDTO) => {
     if (formMode === 'create') {
-      await createPrompt.mutateAsync(data)
+      await createPrompt.mutate({
+        body: data,
+      })
     } else if (selectedPrompt) {
-      await updatePrompt.mutateAsync({
+      await updatePrompt.mutate({
         params: { id: selectedPrompt.id },
         body: data,
       })

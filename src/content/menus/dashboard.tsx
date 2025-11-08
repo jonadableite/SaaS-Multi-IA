@@ -49,23 +49,5 @@ export const dashboardSidebarMenu = {
         },
       ],
     },
-    {
-      id: 'support-menu',
-      name: 'Support',
-      menu: [
-        {
-          id: 'help-center',
-          title: 'Help Center',
-          url: '/help',
-          icon: HelpCircleIcon,
-        },
-        {
-          id: 'send-feedback',
-          title: 'Send Feedback',
-          url: '/contact',
-          icon: SendIcon,
-        },
-      ],
-    },
   ],
 }

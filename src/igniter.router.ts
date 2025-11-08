@@ -23,6 +23,10 @@ import { AgentController } from './features/agent/controllers/agent.controller'
 import { UsageController } from './features/usage/controllers/usage.controller'
 import { MemoryController } from './features/memory/controllers/memory.controller'
 import { PromptController } from './features/prompt/controllers/prompt.controller'
+import { SocialController } from './features/social/controllers/social.controller'
+import { KnowledgeController } from './features/knowledge/controllers/knowledge.controller'
+import { ToolsController } from './features/tools/controllers/tools.controller'
+import { DocumentController } from './features/document/controllers/document.controller'
 
 /**
  * @router AppRouter
@@ -75,6 +79,10 @@ export const AppRouter = igniter.router({
     usage: UsageController, // Usage tracking and statistics
     memory: MemoryController, // User memory management
     prompt: PromptController, // Prompt library management
+    social: SocialController, // Social network integrated search
+    knowledge: KnowledgeController, // Knowledge ingestion and search
+    tools: ToolsController, // Productivity tools (summarize, tasks, outline)
+    document: DocumentController, // Automated document generation
 
     // Admin controllers - Super-administrative functionality
     admin: AdminController, // Administrative operations

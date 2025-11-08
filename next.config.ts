@@ -145,6 +145,10 @@ const nextConfig: NextConfig = withIgniter({
   // server modules from client bundles. The Next.js compiler handles this
   // automatically based on 'use server' directives and server-only imports.
   turbopack: {
+    // Explicitly set the workspace root to this project directory to avoid
+    // Next.js misdetecting parent directories with other lockfiles.
+    // This fixes issues where server loads dependencies from the wrong node_modules.
+    root: __dirname,
     // -------------------------------------------------------------------------
     // Module Resolution Extensions
     // -------------------------------------------------------------------------

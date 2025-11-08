@@ -546,7 +546,7 @@ function SidebarFooter({
           duration: 0.4,
         },
       }}
-      className={cn('p-4 h-[4.44rem]', className)}
+      className={cn('p-4', className)}
     >
       {children}
     </motion.footer>

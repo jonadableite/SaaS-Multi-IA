@@ -100,22 +100,22 @@ model User {
   oauthconsents     OauthConsent[]
 
   // Multi-IA System Fields
-  userPlan         UserPlan       @default(FREE)
-  credits          Int            @default(0)
-  subscriptionId   String?
+  userPlan           UserPlan @default(FREE)
+  credits            Int      @default(0)
+  subscriptionId     String?
   subscriptionStatus String?
 
   // Multi-IA Relations
-  conversations    Conversation[]
-  agents           Agent[]
-  memories         Memory[]
-  userApiKeys      UserApiKey[]
-  usage            Usage[]
-  
+  conversations Conversation[]
+  agents        Agent[]
+  memories      Memory[]
+  userApiKeys   UserApiKey[]
+  usage         Usage[]
+
   // Prompt Library Relations
-  prompts          Prompt[]
-  promptFavorites  PromptFavorite[]
-  promptRatings    PromptRating[]
+  prompts         Prompt[]
+  promptFavorites PromptFavorite[]
+  promptRatings   PromptRating[]
 
   @@unique([email])
   @@index([userPlan])
@@ -183,9 +183,9 @@ model Organization {
   submissions   Submission[]
   leads         Lead[]
   notifications Notification[]
-  
+
   // Prompt Library Relations
-  prompts       Prompt[]
+  prompts Prompt[]
 
   customer Customer?
 
@@ -458,21 +458,21 @@ model OauthConsent {
 
 // Conversation Model
 model Conversation {
-  id          String    @id @default(cuid())
-  title       String?
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String  @id @default(cuid())
+  title  String?
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Organização de histórico
-  category    String?
-  tags        String[]
-  starred     Boolean   @default(false)
-  archived    Boolean   @default(false)
+  category String?
+  tags     String[]
+  starred  Boolean  @default(false)
+  archived Boolean  @default(false)
 
-  messages    Message[]
+  messages Message[]
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([createdAt])
@@ -490,22 +490,22 @@ enum MessageRole {
 
 // Message Model
 model Message {
-  id              String       @id @default(cuid())
-  conversationId  String
-  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  role            MessageRole
-  content         String       @db.Text
-  model           String?      // Provider model used (e.g., "gpt-4", "claude-3")
-  provider        String?      // Provider name (e.g., "openai", "anthropic", "google")
-  tokens          Int?
-  cost            Float?
+  role     MessageRole
+  content  String      @db.Text
+  model    String? // Provider model used (e.g., "gpt-4", "claude-3")
+  provider String? // Provider name (e.g., "openai", "anthropic", "google")
+  tokens   Int?
+  cost     Float?
 
   // Metadados
-  attachments     Json?
-  metadata        Json?
+  attachments Json?
+  metadata    Json?
 
-  createdAt       DateTime     @default(now())
+  createdAt DateTime @default(now())
 
   @@index([conversationId])
   @@index([createdAt])
@@ -515,23 +515,23 @@ model Message {
 
 // Agent Model
 model Agent {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
-  description String   @db.Text
+  description String @db.Text
 
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Configuração
-  prompt      String   @db.Text
+  prompt      String  @db.Text
   model       String
-  provider    String?  // Provider name (e.g., "openai", "anthropic", "google")
-  temperature Float    @default(0.7)
-  maxTokens   Int      @default(2000)
+  provider    String? // Provider name (e.g., "openai", "anthropic", "google")
+  temperature Float   @default(0.7)
+  maxTokens   Int     @default(2000)
 
   // Conhecimento
-  knowledge   Json?    // Base de conhecimento
-  tools       Json?    // Ferramentas disponíveis
+  knowledge Json? // Base de conhecimento
+  tools     Json? // Ferramentas disponíveis
 
   // Publicação
   isPublic    Boolean  @default(false)
@@ -540,11 +540,11 @@ model Agent {
   tags        String[]
 
   // Uso
-  usageCount  Int      @default(0)
-  rating      Float?
+  usageCount Int    @default(0)
+  rating     Float?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([isPublic])
@@ -555,16 +555,16 @@ model Agent {
 
 // Memory Model
 model Memory {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  key         String
-  value       String   @db.Text
-  category    String?
+  key      String
+  value    String  @db.Text
+  category String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, key])
   @@index([userId])
@@ -585,24 +585,24 @@ enum UsageType {
 
 // Usage Model
 model Usage {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  model       String
-  provider    String   // Provider name (e.g., "openai", "anthropic", "google")
-  type        UsageType
-  tokens      Int
-  tokensIn    Int?     // Input tokens
-  tokensOut   Int?     // Output tokens
-  cost        Float
+  model     String
+  provider  String // Provider name (e.g., "openai", "anthropic", "google")
+  type      UsageType
+  tokens    Int
+  tokensIn  Int? // Input tokens
+  tokensOut Int? // Output tokens
+  cost      Float
 
   // Request metadata
-  requestId   String?  // For idempotency
+  requestId      String? // For idempotency
   conversationId String?
-  agentId     String?
+  agentId        String?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([createdAt])
@@ -614,17 +614,17 @@ model Usage {
 
 // User API Key Model (separate from Organization API Keys)
 model UserApiKey {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name        String
-  key         String   @unique
-  lastUsed    DateTime?
-  expiresAt   DateTime?
+  name      String
+  key       String    @unique
+  lastUsed  DateTime?
+  expiresAt DateTime?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([key])
@@ -637,43 +637,43 @@ model UserApiKey {
 
 // Enum de escopo de visibilidade de prompts
 enum PromptScope {
-  USER         // Visível apenas para o criador
+  USER // Visível apenas para o criador
   ORGANIZATION // Visível para toda a organização
-  GLOBAL       // Visível globalmente (marketplace público)
+  GLOBAL // Visível globalmente (marketplace público)
 }
 
 // Model principal de Prompt
 model Prompt {
-  id             String   @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Conteúdo do prompt
-  title          String   // Título do prompt (ex: "Assistente de Code Review")
-  description    String?  @db.Text // Descrição curta para exibição em cards
-  content        String   @db.Text // Conteúdo completo do prompt
-  
+  title       String // Título do prompt (ex: "Assistente de Code Review")
+  description String? @db.Text // Descrição curta para exibição em cards
+  content     String  @db.Text // Conteúdo completo do prompt
+
   // Categorização e organização
-  category       String   // Categoria principal (Marketing, Código, Vendas, etc.)
-  tags           String[] // Tags adicionais para busca e filtros
-  
+  category String // Categoria principal (Marketing, Código, Vendas, etc.)
+  tags     String[] // Tags adicionais para busca e filtros
+
   // Visibilidade e compartilhamento
-  isPublic       Boolean  @default(false) // Se false, apenas criador visualiza
-  scope          PromptScope @default(USER) // Escopo de visibilidade
-  
+  isPublic Boolean     @default(false) // Se false, apenas criador visualiza
+  scope    PromptScope @default(USER) // Escopo de visibilidade
+
   // Relacionamentos
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+
   // Sub-entidades
-  favorites      PromptFavorite[]
-  ratings        PromptRating[]
-  
+  favorites PromptFavorite[]
+  ratings   PromptRating[]
+
   // Timestamps
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Indexes para otimização de queries
   @@index([category])
   @@index([organizationId])
@@ -685,16 +685,16 @@ model Prompt {
 
 // Model de favoritos (relação many-to-many entre User e Prompt)
 model PromptFavorite {
-  id        String   @id @default(uuid())
-  
-  promptId  String
-  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
-  
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id String @id @default(uuid())
+
+  promptId String
+  prompt   Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
-  
+
   // Garante que user não favorite o mesmo prompt múltiplas vezes
   @@unique([promptId, userId])
   @@index([userId])
@@ -704,19 +704,19 @@ model PromptFavorite {
 
 // Model de avaliações/ratings de prompts
 model PromptRating {
-  id        String   @id @default(uuid())
-  
-  rating    Int      // Nota de 1 a 5 estrelas
-  
-  promptId  String
-  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
-  
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id String @id @default(uuid())
+
+  rating Int // Nota de 1 a 5 estrelas
+
+  promptId String
+  prompt   Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt // Permite atualização da avaliação
-  
+
   // User só pode avaliar cada prompt uma vez (mas pode atualizar)
   @@unique([promptId, userId])
   @@index([promptId])
